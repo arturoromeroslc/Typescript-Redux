@@ -6,7 +6,7 @@
 
 interface Action {
   type: string;
-  payload?: any; //? mean optional
+  payload?: any; //? means optional
 }
 
 /* example
@@ -25,8 +25,8 @@ Store.value() - This is a getter, tells us what the state of our store is.
  */
 
 export class Store {
-  private state: { [key: string]: any };
   private reducers: { [key: string]: Function }
+  private state: { [key: string]: any };
 
   constructor(reducers = {}, initialState = {}) {
     this.reducers = reducers;
@@ -63,18 +63,11 @@ export const initialState = {
   loading: false
 };
 
-export function todosReducer(
-  state: {
-    data: [],
-    loaded: false,
-    loading: false
-  },
-  action: { type: string; payload: any }
-) {
+export function todosReducer(state = initialState, action: { type: string; payload: any }) {
   switch (action.type) {
     case 'ADD_TODO': {
       const todo = action.payload
-      const data = [state.data. todo]
+      const data = [...state.data, todo]
 
       return {
         ...state,
@@ -93,5 +86,12 @@ console.log("store", store.value);
 
 store.dispatch({
   type: "ADD_TODO",
-  payload: { label: "eatPizza", complete: false }
+  payload: "Eat Pizza",
 });
+
+store.dispatch({
+  type: "ADD_TODO",
+  payload: "Shower",
+});
+
+console.log("store", JSON.stringify(store.value));
