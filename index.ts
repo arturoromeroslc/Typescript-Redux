@@ -67,7 +67,7 @@ export function todosReducer(state = initialState, action: { type: string; paylo
   switch (action.type) {
     case 'ADD_TODO': {
       const todo = action.payload
-      const data = [state.data. todo]
+      const data = [...state.data, todo]
 
       return {
         ...state,
@@ -84,7 +84,14 @@ const reducers = {
 const store = new Store(reducers);
 console.log("store", store.value);
 
-// store.dispatch({
-//   type: "ADD_TODO",
-//   payload: { label: "eatPizza", complete: false }
-// });
+store.dispatch({
+  type: "ADD_TODO",
+  payload: "Eat Pizza",
+});
+
+store.dispatch({
+  type: "ADD_TODO",
+  payload: "Shower",
+});
+
+console.log("store", JSON.stringify(store.value));
