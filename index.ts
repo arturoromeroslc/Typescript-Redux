@@ -1,49 +1,12 @@
-/*What is Redux
-
-“this is just a structured process for updating a property on an object”. That is Redux. -Todd Motto
-
-*/
-
 interface Action {
   type: string;
-  payload?: any; //? means optional
+  payload?: any; //the `?` means optional
 }
-
-/* example
-const action: Action = {
-  type: 'ADD_TODO',
-  payload: { label: 'Eat pizza,', complete: false },
-};
- */
-
-/*
-The Store API
-the store api has three public functions
-Store.dispatch() - instructions, we intend to change the state tree.
-Store.subscribe() - when the state tree changes we pass in the state down to the subscribe callback
-Store.value() - This is a getter, tells us what the state of our store is.
- */
 
 export class Store {
   private reducers: { [key: string]: Function }
-  private state: { [key: string]: any };
-
-  constructor(reducers = {}, initialState = {}) {
-    this.reducers = reducers;
-    this.state = this.reduce(initialState, {})
-  }
-
-  /*
-    return sthe state objectconsole.log(store.value);
-   */
-  get value() {
-    return this.state;
-  }
-
-  dispatch(action) {
-    this.state = this.reduce(this.state, action)
-  }
-
+  private state: { [key: string]: any }
+  private subscribers: Function[]
   private reduce(state, action) {
     const newState = {}
     //calculate and return new state
@@ -54,7 +17,35 @@ export class Store {
 
     return newState
   }
-  subscribe() {}
+
+  constructor(reducers = {}, initialState = {}) {
+    this.subscribers = []
+    this.reducers = reducers;
+    this.state = this.reduce(initialState, {})
+  }
+
+  /*
+    returns the state object
+   */
+  get value() {
+    return this.state;
+  }
+
+  /*
+  Public funtion to tell store to update with the reducers provided
+   */
+  dispatch(action) {
+    this.state = this.reduce(this.state, action)
+    this.subscribers.forEach((fn) => fn(this.value))
+  }
+
+  subscribe(fn) {
+    this.subscribers = [ ...this.subscribers, fn ]
+    fn(this.value)
+    return () => {
+      this.subscribers.filter(sub => sub !== fn)
+    }
+  }
 }
 
 export const initialState = {
